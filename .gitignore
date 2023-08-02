@@ -1,12 +1,13 @@
 *
 **/**
 
-!server
-!server/**
-!client
-!client/**
+!server_dir
+!server_dir/**
+!client_dir
+!client_dir/**
 
 !.gitignore
 !*.cpp
 !*.hpp
 !CMakeLists.txt
+!Makefile
