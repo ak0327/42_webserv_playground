@@ -1,22 +1,3 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-
-#define SERVER_ADDR		"127.0.0.1"
-#define SERVER_PORT		8080
-#define BUF_SIZE		1024
-#define SOCKET_ERROR	(-1)
-#define SEND_ERROR		(-1)
-#define CONNECT_ERROR	(-1)
-#define RECV_ERROR		(-1)
-
-#define SUCCESS			0
-#define FAILURE			1
-
 #include "Client.hpp"
 
 static int	create_client_socket(int *sock) {
@@ -67,6 +48,13 @@ static void transfer_to_server(int sock) {
 	}
 }
 
+static int	prepare_connect_to_server(int *sock, struct sockaddr_in *addr) {
+	if (create_client_socket(sock) == FAILURE)
+		return EXIT_FAILURE;
+	set_client_socket(addr);
+	return SUCCESS;
+}
+
 static int	connect_to_server(int sock, struct sockaddr_in *addr) {
 	// todo: sockaddr or sockaddr_in?
 
@@ -94,13 +82,10 @@ int main() {
 	int					sock;
 	struct sockaddr_in	addr = {};
 
-	if (create_client_socket(&sock) == FAILURE)
+	if (prepare_connect_to_server(&sock, &addr) == FAILURE)
 		return EXIT_FAILURE;
-
-	set_client_socket(&addr);
-
 	if (communicate_to_server(sock, &addr) == FAILURE)
 		return EXIT_FAILURE;
-
+	close(sock);
 	return EXIT_SUCCESS;
 }

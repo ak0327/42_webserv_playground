@@ -48,7 +48,7 @@ static int	accept_connect(int w_addr, int *c_sock) {
 	return *c_sock;
 }
 
-static int	prepare_connect(int *w_addr, struct sockaddr_in *a_addr) {
+static int	prepare_connect_to_client(int *w_addr, struct sockaddr_in *a_addr) {
 	if (create_socket(w_addr) == SOCKET_ERROR)
 		return FAILURE;
 
@@ -116,9 +116,9 @@ static int	communicate_to_client(int w_addr, int *c_sock) {
 
 int main() {
 	int					w_addr, c_sock;
-	struct sockaddr_in	a_addr;
+	struct sockaddr_in	a_addr = {};
 
-	if (prepare_connect(&w_addr, &a_addr) == FAILURE)
+	if (prepare_connect_to_client(&w_addr, &a_addr) == FAILURE)
 		return EXIT_FAILURE;
 	if (communicate_to_client(w_addr, &c_sock) == FAILURE)
 		return EXIT_FAILURE;
