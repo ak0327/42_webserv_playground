@@ -25,6 +25,8 @@
 
 #define PROTOCOL		0
 
+#define FINISH			"finish\n"
+
 class Server {
  public:
 	Server();
@@ -36,11 +38,15 @@ class Server {
 	int	w_addr_fd_;
 	int	c_sock_fd_;
 	struct sockaddr_in	a_addr_;
+	char recv_buf_[BUF_SIZE];
 
 	void create_socket();
 	void set_socket_addr();
 	void bind_socket() const;
 	void listen_socket() const;
 	void accept_connect();
-	void transfer_to_client() const;
+	void transfer_to_client();
+	ssize_t recv_from_server();
+	bool is_connection_finished() const;
+	void send_to_client(bool is_continue);
 };

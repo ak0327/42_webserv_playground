@@ -29,11 +29,14 @@ class Client {
 	void communicate_to_server();
 
  private:
-	int					sock_fd_;
+	int sock_fd_;
 	struct sockaddr_in	addr_;
+	char recv_buf_;
 
 	void create_client_socket();
 	void set_client_socket();
 	char *get_send_line() const;
-	void transfer_to_server() const;
+	void transfer_to_server();
+	void send_to_server(const char *send_buf);
+	ssize_t recv_from_server();
 };

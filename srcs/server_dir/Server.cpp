@@ -54,39 +54,53 @@ void Server::accept_connect() {
 	}
 }
 
-void Server::transfer_to_client() const {
-	ssize_t	recv_size, send_size;
-	char	recv_buf[BUF_SIZE], send_buf;
+ssize_t Server::recv_from_server() {
+	ssize_t	recv_size;
+
+	errno = 0;
+	recv_size = recv(c_sock_fd_, recv_buf_, BUF_SIZE, 0);
+	if (recv_size == RECV_ERROR) {
+		throw std::runtime_error(strerror(errno));
+	}
+	return recv_size;
+}
+
+bool Server::is_connection_finished() const {
+	return strcmp(recv_buf_, FINISH) == 0;
+}
+
+void Server::send_to_client(bool is_continue) {
+	char	send_buf;
+	ssize_t	send_size;
+
+	if (is_continue)
+		send_buf = 1;
+	else
+		send_buf = 0;
+	errno = 0;
+	send_size = send(c_sock_fd_, &send_buf, 1, 0);  // todo: 1, 0 ?
+	if (send_size == SEND_ERROR) {
+		throw std::runtime_error(strerror(errno));
+	}
+}
+
+void Server::transfer_to_client() {
+	ssize_t	recv_size;
 
 	while (true) {
-		errno = 0;
-		recv_size = recv(c_sock_fd_, recv_buf, BUF_SIZE, 0);
-		if (recv_size == RECV_ERROR) {
-			throw std::runtime_error(strerror(errno));
-		}
+		recv_size = recv_from_server();
 		if (recv_size == 0) {
 			std::cout << CYAN "[SERVER] connection end" END << std::endl;
 			return;
 		}
 
-		std::cout << YELLOW << recv_buf << END;
-
-		if (strcmp(recv_buf, "finish\n") == 0) {
-			send_buf = 0;
-			errno = 0;
-			send_size = send(c_sock_fd_, &send_buf, 1, 0);  // todo: 1, 0 ?
-			if (send_size == SEND_ERROR) {
-				throw std::runtime_error(strerror(errno));
-			}
+		if (is_connection_finished()) {
+			send_to_client(false);
 			return;
 		}
 
-		send_buf = 1;
-		errno = 0;
-		send_size = send(c_sock_fd_, &send_buf, 1, 0);
-		if (send_size == SEND_ERROR) {
-			throw std::runtime_error(strerror(errno));
-		}
+		std::cout << YELLOW << recv_buf_ << END;
+		send_to_client(true);
 	}
 }
 
@@ -99,7 +113,6 @@ void Server::communicate_to_client() {
 		break;
 	}
 }
-
 
 Server::Server() {
 	create_socket();

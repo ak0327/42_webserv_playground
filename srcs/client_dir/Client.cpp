@@ -36,9 +36,29 @@ char *Client::get_send_line() const {
 	return line;
 }
 
-void Client::transfer_to_server() const {
-	ssize_t	send_size, recv_size;
-	char	recv_buf;
+void Client::send_to_server(const char *send_buf) {
+	ssize_t	send_size;
+
+	errno = 0;
+	send_size = send(sock_fd_, send_buf, strlen(send_buf) + 1, 0);  // todo: 0
+	if (send_size == SEND_ERROR) {
+		throw std::runtime_error(strerror(errno));
+	}
+}
+
+ssize_t	Client::recv_from_server() {
+	ssize_t	recv_size;
+
+	errno = 0;
+	recv_size = recv(sock_fd_, &recv_buf_, 1, 0);  // todo: 1, 0
+	if (recv_size == RECV_ERROR) {
+		throw std::runtime_error(strerror(errno));
+	}
+	return recv_size;
+}
+
+void Client::transfer_to_server() {
+	ssize_t recv_size;
 	char 	*send_buf;
 
 	while (true) {
@@ -49,24 +69,14 @@ void Client::transfer_to_server() const {
 			break;
 		}
 
-		errno = 0;
-		send_size = send(sock_fd_, send_buf, strlen(send_buf) + 1, 0);  // todo: 0
-		if (send_size == SEND_ERROR) {
-			throw std::runtime_error(strerror(errno));
-		}
+		send_to_server(send_buf);
 
-		errno = 0;
-		recv_size = recv(sock_fd_, &recv_buf, 1, 0);  // todo: 1, 0
-		if (recv_size == RECV_ERROR) {
-			throw std::runtime_error(strerror(errno));
-		}
-
+		recv_size = recv_from_server();
 		if (recv_size == 0) {
 			std::cout << YELLOW "[CLIENT] connection end" END << std::endl;
 			return;
 		}
-
-		if (recv_buf == 0) {
+		if (recv_buf_ == 0) {
 			std::cout << YELLOW "[CLIENT] Finish connection" END << std::endl;
 			return;
 		}
