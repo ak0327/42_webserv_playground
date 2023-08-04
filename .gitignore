@@ -1,10 +1,10 @@
 *
 **/**
 
-!server_dir
-!server_dir/**
-!client_dir
-!client_dir/**
+!srcs/
+!srcs/**/
+!includes
+!playground
 
 !.gitignore
 !*.cpp
