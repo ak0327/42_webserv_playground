@@ -4,6 +4,10 @@ CLIENT		= client
 CXX			= c++
 CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -MMD -MP -pedantic
 
+ifdef WITH_SANI
+	CXXFLAGS += -g -fsanitize=address
+endif
+
 SERVER_SCR	= srcs/server_dir/Server.cpp \
 			  srcs/server_dir/main.cpp
 
@@ -40,6 +44,9 @@ clean	:
 fclean	: clean
 	$(RM) $(SERVER) $(CLIENT)
 
-re		: fclean all
+sani	:
+	make all WITH_SANI=1
+
+re		: fclean all sani
 
 -include $(DEPS)
