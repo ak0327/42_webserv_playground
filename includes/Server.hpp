@@ -23,7 +23,13 @@
 #define LISTEN_ERROR	(-1)
 #define RECV_ERROR		(-1)
 
+#define FLAG_NONE		0
+#define STR_EQUAL		0
+
 #define PROTOCOL		0
+#define NULL_CHR		0
+#define CONTINUE_CHR	1
+#define SEND_LEN		1
 
 #define FINISH			"finish\n"
 
@@ -35,8 +41,8 @@ class Server {
 	void communicate_to_client();
 
  private:
-	int	w_addr_fd_;
-	int	c_sock_fd_;
+	int	listen_fd_;
+	int	connect_fd_;
 	struct sockaddr_in	a_addr_;
 	char recv_buf_[BUF_SIZE];
 

@@ -20,6 +20,8 @@
 #define CONNECT_ERROR	(-1)
 #define RECV_ERROR		(-1)
 
+#define FLAG_NONE		0
+
 class Client {
  public:
 	Client();
@@ -29,7 +31,7 @@ class Client {
 	void communicate_to_server();
 
  private:
-	int sock_fd_;
+	int connect_fd_;
 	struct sockaddr_in	addr_;
 	char recv_buf_;
 

@@ -4,8 +4,8 @@
 void Client::create_client_socket() {
 	// client: active socket
 	errno = 0;
-	sock_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_fd_ == SOCKET_ERROR) {
+	connect_fd_ = socket(AF_INET, SOCK_STREAM, 0);
+	if (connect_fd_ == SOCKET_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
 }
@@ -38,9 +38,10 @@ char *Client::get_send_line() const {
 
 void Client::send_to_server(const char *send_buf) {
 	ssize_t	send_size;
+	size_t	buf_len = strlen(send_buf) + 1;
 
 	errno = 0;
-	send_size = send(sock_fd_, send_buf, strlen(send_buf) + 1, 0);  // todo: 0
+	send_size = send(connect_fd_, send_buf, buf_len, FLAG_NONE);
 	if (send_size == SEND_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -50,7 +51,7 @@ ssize_t	Client::recv_from_server() {
 	ssize_t	recv_size;
 
 	errno = 0;
-	recv_size = recv(sock_fd_, &recv_buf_, 1, 0);  // todo: 1, 0
+	recv_size = recv(connect_fd_, &recv_buf_, 1, FLAG_NONE);
 	if (recv_size == RECV_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -58,7 +59,7 @@ ssize_t	Client::recv_from_server() {
 }
 
 void Client::transfer_to_server() {
-	ssize_t recv_size;
+	ssize_t	recv_size;
 	char 	*send_buf;
 
 	while (true) {
@@ -84,10 +85,10 @@ void Client::transfer_to_server() {
 }
 
 void Client::connect_to_server() {
+	socklen_t	len = sizeof(struct sockaddr_in);
+
 	errno = 0;
-	if (connect(sock_fd_, \
-				(struct sockaddr *)&addr_, \
-				sizeof(struct sockaddr_in)) == CONNECT_ERROR) {
+	if (connect(connect_fd_, (struct sockaddr *)&addr_, len) == CONNECT_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
 }
@@ -104,4 +105,4 @@ Client::Client() {
 	set_client_socket();
 }
 
-Client::~Client() { close(sock_fd_); }
+Client::~Client() { close(connect_fd_); }

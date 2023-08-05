@@ -5,8 +5,8 @@ void Server::create_socket() {
 	// AF_INET     : IPv4
 	// SOCK_STREAM : stream socket
 	errno = 0;
-	w_addr_fd_ = socket(AF_INET, SOCK_STREAM, PROTOCOL);
-	if (w_addr_fd_ == SOCKET_ERROR) {
+	listen_fd_ = socket(AF_INET, SOCK_STREAM, PROTOCOL);
+	if (listen_fd_ == SOCKET_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
 }
@@ -22,12 +22,11 @@ void Server::set_socket_addr() {
 }
 
 void Server::bind_socket() const {
-	int	bind_ret;
+	int			bind_ret;
+	socklen_t	len = sizeof(a_addr_);
 
 	errno = 0;
-	bind_ret = bind(w_addr_fd_, \
-					(const struct sockaddr *)&a_addr_, \
-					sizeof(a_addr_));
+	bind_ret = bind(listen_fd_, (const struct sockaddr *)&a_addr_, len);
 	if (bind_ret == BIND_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -38,7 +37,7 @@ void Server::listen_socket() const {
 
 	// server: listen -> passive socket
 	errno = 0;
-	listen_ret = listen(w_addr_fd_, SOMAXCONN);
+	listen_ret = listen(listen_fd_, SOMAXCONN);
 	if (listen_ret == LISTEN_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -48,8 +47,8 @@ void Server::accept_connect() {
 	// w_addr; socket is listening socket
 	// no peer socket -> addr, addrlen can be NULL
 	errno = 0;
-	c_sock_fd_ = accept(w_addr_fd_, NULL, NULL);
-	if (c_sock_fd_ == ACCEPT_ERROR) {
+	connect_fd_ = accept(listen_fd_, NULL, NULL);
+	if (connect_fd_ == ACCEPT_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
 }
@@ -58,7 +57,7 @@ ssize_t Server::recv_from_server() {
 	ssize_t	recv_size;
 
 	errno = 0;
-	recv_size = recv(c_sock_fd_, recv_buf_, BUF_SIZE, 0);
+	recv_size = recv(connect_fd_, recv_buf_, BUF_SIZE, FLAG_NONE);
 	if (recv_size == RECV_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -66,7 +65,7 @@ ssize_t Server::recv_from_server() {
 }
 
 bool Server::is_connection_finished() const {
-	return strcmp(recv_buf_, FINISH) == 0;
+	return strcmp(recv_buf_, FINISH) == STR_EQUAL;
 }
 
 void Server::send_to_client(bool is_continue) {
@@ -74,11 +73,11 @@ void Server::send_to_client(bool is_continue) {
 	ssize_t	send_size;
 
 	if (is_continue)
-		send_buf = 1;
+		send_buf = CONTINUE_CHR;
 	else
-		send_buf = 0;
+		send_buf = NULL_CHR;
 	errno = 0;
-	send_size = send(c_sock_fd_, &send_buf, 1, 0);  // todo: 1, 0 ?
+	send_size = send(connect_fd_, &send_buf, SEND_LEN, FLAG_NONE);
 	if (send_size == SEND_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -121,4 +120,5 @@ Server::Server() {
 	listen_socket();
 }
 
-Server::~Server() { close(w_addr_fd_); }
+Server::~Server() { close(listen_fd_); }
+// todo: close connect_fd_
