@@ -11,3 +11,4 @@
 !*.hpp
 !CMakeLists.txt
 !Makefile
+!*.md
