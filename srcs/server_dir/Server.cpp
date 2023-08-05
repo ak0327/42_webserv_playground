@@ -44,7 +44,7 @@ void Server::listen_socket() const {
 }
 
 void Server::accept_connect() {
-	// w_addr; socket is listening socket
+	// server: listening socket
 	// no peer socket -> addr, addrlen can be NULL
 	errno = 0;
 	connect_fd_ = accept(listen_fd_, NULL, NULL);
@@ -83,7 +83,7 @@ void Server::send_to_client(bool is_continue) {
 	}
 }
 
-void Server::transfer_to_client() {
+void Server::transfer_to_client_in_child() {
 	ssize_t	recv_size;
 
 	while (true) {
@@ -92,15 +92,27 @@ void Server::transfer_to_client() {
 			std::cout << CYAN "[SERVER] connection end" END << std::endl;
 			return;
 		}
-
 		if (is_connection_finished()) {
 			send_to_client(false);
 			return;
 		}
-
 		std::cout << YELLOW << recv_buf_ << END;
 		send_to_client(true);
 	}
+}
+
+void Server::transfer_to_client() {
+	errno = 0;
+	pid_ = fork();
+	if (pid_ == FORK_ERROR)
+		throw std::runtime_error(strerror(errno));
+	if (pid_ == CHILD_PROC) {
+		close(listen_fd_);
+		transfer_to_client_in_child();
+		close(connect_fd_);
+		exit(EXIT_SUCCESS);
+	}
+	close(connect_fd_);
 }
 
 void Server::communicate_to_client() {
@@ -109,7 +121,8 @@ void Server::communicate_to_client() {
 		accept_connect();
 		std::cout << CYAN "[SERVER] connected" END << std::endl;
 		transfer_to_client();
-		break;
+		// break;
+		// todo: how to finish server
 	}
 }
 

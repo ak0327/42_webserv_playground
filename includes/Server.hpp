@@ -22,6 +22,7 @@
 #define SEND_ERROR		(-1)
 #define LISTEN_ERROR	(-1)
 #define RECV_ERROR		(-1)
+#define FORK_ERROR		(-1)
 
 #define FLAG_NONE		0
 #define STR_EQUAL		0
@@ -30,6 +31,7 @@
 #define NULL_CHR		0
 #define CONTINUE_CHR	1
 #define SEND_LEN		1
+#define CHILD_PROC		0
 
 #define FINISH			"finish\n"
 
@@ -45,6 +47,7 @@ class Server {
 	int	connect_fd_;
 	struct sockaddr_in	a_addr_;
 	char recv_buf_[BUF_SIZE];
+	pid_t pid_;
 
 	void create_socket();
 	void set_socket_addr();
@@ -55,4 +58,5 @@ class Server {
 	ssize_t recv_from_server();
 	bool is_connection_finished() const;
 	void send_to_client(bool is_continue);
+	void transfer_to_client_in_child();
 };
