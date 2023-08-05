@@ -26,6 +26,7 @@ INCLUDES	= $(addprefix -I, $(INCLUDES_DIR))
 
 DEPS		= $(OBJS:%.o=%.d)
 
+.PHONY		:all
 all			: $(SERVER) $(CLIENT)
 
 $(SERVER)	: $(SERVER_OBJS)
@@ -38,15 +39,24 @@ $(OBJ_DIR)/%.o	: %.cpp
 	@mkdir -p $$(dirname $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
+.PHONY	: clean
 clean	:
 	rm -rf $(OBJ_DIR)
 
+.PHONY	: fclean
 fclean	: clean
 	$(RM) $(SERVER) $(CLIENT)
 
+.PHONY	: sani
 sani	:
 	make all WITH_SANI=1
 
-re		: fclean all sani
+.PHONY	: re
+re		: fclean all
+
+.PHONY	: lint
+lint	:
+	cpplint --recursive srcs includes
+
 
 -include $(DEPS)

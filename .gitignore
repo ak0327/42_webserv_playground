@@ -11,4 +11,5 @@
 !*.hpp
 !CMakeLists.txt
 !Makefile
-!*.md
+!Readme.md
+!CPPLINT.cfg
