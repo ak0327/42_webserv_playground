@@ -53,7 +53,7 @@ void Server::accept_connect() {
 	}
 }
 
-ssize_t Server::recv_from_server() {
+ssize_t Server::recv_from_client() {
 	ssize_t	recv_size;
 
 	errno = 0;
@@ -87,7 +87,7 @@ void Server::transfer_to_client_in_child() {
 	ssize_t	recv_size;
 
 	while (true) {
-		recv_size = recv_from_server();
+		recv_size = recv_from_client();
 		if (recv_size == 0) {
 			std::cout << CYAN "[SERVER] connection end" END << std::endl;
 			return;

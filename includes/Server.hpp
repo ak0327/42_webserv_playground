@@ -55,7 +55,7 @@ class Server {
 	void listen_socket() const;
 	void accept_connect();
 	void transfer_to_client();
-	ssize_t recv_from_server();
+	ssize_t recv_from_client();
 	bool is_connection_finished() const;
 	void send_to_client(bool is_continue);
 	void transfer_to_client_in_child();
