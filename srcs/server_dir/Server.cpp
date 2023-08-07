@@ -61,8 +61,10 @@ void Server::accept_connect() {
 
 std::string Server::get_request_method() {
 	char	*line, *tmp_method;
+	char	cpy_request[SIZE];
 
-	line = strtok(request_message_, "\n");
+	memcpy(cpy_request, request_message_, SIZE);
+	line = strtok(cpy_request, "\n");
 	tmp_method = strtok(line, " ");
 	if (!tmp_method) {
 		throw std::runtime_error("fail to get request method");
@@ -83,15 +85,13 @@ std::string Server::get_request_target() {
 	target = tmp_target;
 
 	// method start with '/'
-	// todo: ./ ?
-	if (target.find('/') == 0) {
-		target.erase(target.begin());
+	if (target == "/now" || target == "/show_request") {
+		return target;
 	}
-
-	if (target.empty()) {
+	if (target == "/") {
 		target = "www/index.html";
 	} else {
-		target = "www/" + target;
+		target = "www" + target;
 	}
 	return target;
 }
@@ -101,10 +101,43 @@ void Server::parse_request_message() {
 	target_ = get_request_target();
 }
 
+std::string Server::get_dynamic_body_now() {
+	std::ostringstream ss;
+
+	ss << "<html>\n"
+	   << "<body>\n"
+	   << "<h1>Now: " << get_response_date() << "</h1>\n"
+	   << "</body>\n"
+	   << "</html>";
+
+	return ss.str();
+}
+
+std::string Server::get_dynamic_body_show_request() {
+	std::ostringstream ss;
+
+	ss << "<html>\n"
+	   << "<body>\n"
+	   << "<h1>Request Message: </h1>\n"
+	   << "<pre>" << request_message_ << "</pre>\n"
+	   << "</body>\n"
+	   << "</html>";
+
+	return ss.str();
+}
+
 int Server::get_processing(const char *file_path) {
 	FILE	*f;
 	size_t	file_size;
 	char	buf[SIZE];
+
+	if (strcmp(file_path, "/now") == 0) {
+		body_ = get_dynamic_body_now();
+		return 200;
+	} else if (strcmp(file_path, "/show_request") == 0) {
+		body_ = get_dynamic_body_show_request();
+		return 200;
+	}
 
 	file_size = get_file_size(file_path);
 	if (file_size == 0) {
@@ -145,9 +178,8 @@ std::string Server::get_content_type() const {
 
 	ext_str = get_extension(target_);
 //	std::cout << "ext_str:" << ext_str << std::endl;
-
-	if (ext_str == "www")
-		return "text/www";
+	if (ext_str == "html" || target_ == "/now" || target_ == "/show_request")
+		return "text/html";
 	if (ext_str == "css")
 		return "text/css";
 	if (ext_str == "jpg")
@@ -159,8 +191,8 @@ std::string Server::get_content_type() const {
 
 std::string Server::create_status_line(int status) {
 	if (status == 200)
-		return "HTTP/1.1 200 OK\r\n";
-	return "HTTP/1.1 404 Not Found\r\n";
+		return HTTP_VERSION " " STATUS_OK "\r\n";
+	return HTTP_VERSION " " STATUS_NOT_FOUND "\r\n";
 }
 
 std::string Server::get_content_len_str() {

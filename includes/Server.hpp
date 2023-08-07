@@ -39,6 +39,10 @@
 
 #define FINISH			"finish\n"
 
+#define HTTP_VERSION		"HTTP/1.1"
+#define STATUS_OK			"200 OK"
+#define STATUS_NOT_FOUND	"404 Not Found"
+
 class Server {
  public:
 	Server();
@@ -76,6 +80,8 @@ class Server {
 
 	int get_status();
 	int get_processing(const char *file_path);
+	std::string get_dynamic_body_now();
+	std::string get_dynamic_body_show_request();
 
 	ssize_t create_response_message(int status);
 	std::string create_status_line(int status);
