@@ -12,6 +12,7 @@
 #include <fcntl.h>
 
 #include <iostream>
+#include <sstream>
 #include <exception>
 
 #define SERVER_ADDR		"127.0.0.1"
@@ -49,35 +50,40 @@ class Server {
 	int	listen_fd_;
 	int	connect_fd_;
 	struct sockaddr_in	a_addr_;
-	char recv_buf_[BUF_SIZE];
-//	pid_t pid_;
 
 	char request_message_[SIZE];
-	char response_message_[SIZE];
-	char method_[SIZE];
-	char target_[SIZE];
-	char header_field_[SIZE];
-	char body_[SIZE];
+	std::string response_message_;
+	std::string method_;
+	std::string target_;
+	std::string body_;
 
 	void create_socket();
 	void set_socket_addr();
 	void bind_socket() const;
 	void listen_socket() const;
 	void accept_connect();
-//	void transfer_to_client();
-	ssize_t recv_from_client();
-	bool is_connection_finished() const;
-	void send_to_client(bool is_continue);
-	void transfer_to_client_in_child();
+
+	std::string get_response_date() const;
+	std::string get_content_type() const;
+	std::string get_extension(const std::string &path) const;
 
 	ssize_t	recv_request_from_client();
 
 	void response_http_to_client();
 	void parse_request_message();
+	std::string get_request_method();
+	std::string get_request_target();
+
 	int get_status();
-	int get_processing(char *file_path);
+	int get_processing(const char *file_path);
+
 	ssize_t create_response_message(int status);
-	ssize_t get_file_size(const char *path) const;
+	std::string create_status_line(int status);
+	std::string create_response_header();
+	std::string get_content_len_str();
+	std::string create_response_body(int status);
+
+	ssize_t get_file_size(const char *path);
 	void send_response_to_client(ssize_t response_size);
 	void disconnect_from_client() const;
 };
