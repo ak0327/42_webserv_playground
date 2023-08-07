@@ -9,16 +9,21 @@ set(CMAKE_CXX_FLAGS "-std=c++98 -Wall -Wextra -Werror")
 
 include_directories(includes)
 
-set(server_src
-        srcs/server_dir/Server.cpp
-        srcs/server_dir/main.cpp
+add_executable(
+        server srcs/server_dir/Server.cpp
+               srcs/server_dir/main.cpp
 )
 
-add_executable(server ${server_src})
+#set(server_src
+#        srcs/server_dir/Server.cpp
+#        srcs/server_dir/main.cpp
+#)
 
-set(client_src
-        srcs/client_dir/Client.cpp
-        srcs/client_dir/main.cpp
-)
-
-add_executable(client ${client_src})
+#add_executable(server ${server_src})
+#
+#set(client_src
+#        srcs/client_dir/Client.cpp
+#        srcs/client_dir/main.cpp
+#)
+#
+#add_executable(client ${client_src})

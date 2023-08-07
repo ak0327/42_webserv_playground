@@ -5,7 +5,7 @@ CXX			= c++
 CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -MMD -MP -pedantic
 
 ifdef WITH_SANI
-	CXXFLAGS += -g -fsanitize=address
+	CXXFLAGS += -g -fsanitize=address -fsanitize=undefined
 endif
 
 SERVER_SCR	= srcs/server_dir/Server.cpp \
@@ -27,7 +27,8 @@ INCLUDES	= $(addprefix -I, $(INCLUDES_DIR))
 DEPS		= $(OBJS:%.o=%.d)
 
 .PHONY		:all
-all			: $(SERVER) $(CLIENT)
+all			: $(SERVER)
+#all			: $(SERVER) $(CLIENT)
 
 $(SERVER)	: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -58,5 +59,8 @@ re		: fclean all
 lint	:
 	cpplint --recursive srcs includes
 
+.PHONY	: run
+run		: all
+	./$(SERVER)
 
 -include $(DEPS)
