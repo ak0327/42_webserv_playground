@@ -1,10 +1,11 @@
 *
-**/**
 
 !srcs/
-!srcs/**/
-!includes
-!playground
+!srcs/**
+!www/
+!www/*
+!includes/
+!playground/
 
 !.gitignore
 !*.cpp
