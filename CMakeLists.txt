@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.2)
 project(webserv_playground)
 
 set(CMAKE_CXX_STANDARD 11) # 98...
@@ -9,21 +9,9 @@ set(CMAKE_CXX_FLAGS "-std=c++98 -Wall -Wextra -Werror")
 
 include_directories(includes)
 
-add_executable(
-        server srcs/server_dir/Server.cpp
-               srcs/server_dir/main.cpp
+add_executable(server
+        srcs/server_dir/Server.cpp
+        srcs/server_dir/main.cpp
+        srcs/server_dir/HttpRequest.cpp
+        srcs/server_dir/HttpResponse.cpp
 )
-
-#set(server_src
-#        srcs/server_dir/Server.cpp
-#        srcs/server_dir/main.cpp
-#)
-
-#add_executable(server ${server_src})
-#
-#set(client_src
-#        srcs/client_dir/Client.cpp
-#        srcs/client_dir/main.cpp
-#)
-#
-#add_executable(client ${client_src})
