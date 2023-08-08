@@ -94,7 +94,7 @@ void Server::response_http_to_client() {
 		return;
 	}
 	HttpRequest request = HttpRequest(request_message_);
-//	request.show_request();
+	request.show_request();
 
 	HttpResponse response = HttpResponse(request);
 //	response.show_response();

@@ -3,7 +3,11 @@
 #include <iostream>
 #include <map>
 
-#define HTTP_VERSION		"HTTP/1.1"
+#include "Color.hpp"
+
+#define HTTP_VERSION	"HTTP/1.1"
+#define WWW_ROOT		"www"
+#define INDEX			"/index.html"
 
 class HttpRequest {
  public:

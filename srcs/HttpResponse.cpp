@@ -1,60 +1,58 @@
 #include "HttpResponse.hpp"
 
 HttpResponse::HttpResponse(HttpRequest const &request) {
+	STATUS_CODES_ = init_status_line();
 	get_http_response(request);
 }
 
 HttpResponse::~HttpResponse() {}
 
-void HttpResponse::get_http_response(HttpRequest const &request) {
-	ssize_t	response_size;
-
-	status_code_ = get_response_body_and_status(request);
-	content_type_ = get_content_type(request.get_path());
-	response_size = create_response_message(status_code_);
-	if (response_size == -1) {
-		throw std::runtime_error("error status code");
-	}
-	response_size_ = response_size;
+// todo: add more status
+std::map<int, std::string> HttpResponse::init_status_line() {
+	std::map<int, std::string> status_codes;
+	status_codes[200] = "200 OK";
+	status_codes[404] = "404 Not Found";
+	status_codes[405] = "405 Method Not Allowed";
+	return status_codes;
 }
 
-int HttpResponse::get_response_body_and_status(HttpRequest const &request) {
+void HttpResponse::get_http_response(HttpRequest const &request) {
+	status_code_ = get_response_body_and_status(request);
+	content_type_ = get_content_type(request.get_path());
+	response_size_ = create_response_message();
+}
+
+std::string HttpResponse::get_response_body_and_status(HttpRequest const &request) {
 	std::string	method = request.get_method();
 	std::string path = request.get_path();
 	std::string received_request = request.get_received_request();
-
-	if (method != "GET" && method != "POST") {
-		return 404;
-	}
-	return get_response_body(path.c_str(), received_request);
-}
-
-
-int HttpResponse::get_response_body(const char *file_path,
-									std::string const &received_request) {
 	FILE	*f;
 	size_t	file_size;
 	char	buf[SIZE];
 
-	if (strcmp(file_path, "/now") == 0) {
-		body_ = get_dynamic_body_now();
-		return 200;
-	} else if (strcmp(file_path, "/show_request") == 0) {
-		// todo: received_request -> request_line, header, body
-		body_ = get_dynamic_body_show_request(received_request);
-		return 200;
+	if (method != "GET" && method != "POST") {
+		return STATUS_CODES_[404];
 	}
 
-	file_size = get_file_size(file_path);
-	if (file_size == 0) {
-		return 404;
+	if (path ==  "/now") {
+		body_ = get_dynamic_body_now();
+		return STATUS_CODES_[200];
+	} else if (path == "/show_request") {
+		// todo: received_request -> request_line, header, body
+		body_ = get_dynamic_body_show_request(received_request);
+		return STATUS_CODES_[200];
 	}
-	f = fopen(file_path, "r");
+
+	file_size = get_file_size(path.c_str());
+	if (file_size == 0) {
+		return STATUS_CODES_[404];
+	}
+	f = fopen(path.c_str(), "r");
 	std::fread(&buf, 1, file_size, f);
 	fclose(f);
 	buf[file_size] = '\0';
 	body_ = std::string(buf, file_size);
-	return 200;
+	return STATUS_CODES_[200];
 }
 
 std::string HttpResponse::get_response_date() {
@@ -95,10 +93,11 @@ std::string HttpResponse::get_content_type(std::string const &path) {
 	return "application/octet-stream";
 }
 
-std::string HttpResponse::create_status_line(int status) {
-	if (status == 200)
-		return HTTP_VERSION " " STATUS_OK "\r\n";
-	return HTTP_VERSION " " STATUS_NOT_FOUND "\r\n";
+std::string HttpResponse::create_status_line() {
+	std::ostringstream	ss;
+
+	ss << HTTP_VERSION << " " << status_code_ << "\r\n";
+	return ss.str();
 }
 
 std::string HttpResponse::get_content_len_str() {
@@ -118,8 +117,8 @@ std::string HttpResponse::create_response_header() {
 	return response_header;
 }
 
-std::string HttpResponse::create_response_body(int status) {
-	if (status == 404) {
+std::string HttpResponse::create_response_body() {
+	if (status_code_ == STATUS_CODES_[404]) {
 		return "<html><body><h1>404 Not Found</h1></body></html>";
 	}
 	return body_;
@@ -133,16 +132,13 @@ char *HttpResponse::get_response_message() {
 	return const_cast<char *>(response_message_.c_str());
 }
 
-ssize_t HttpResponse::create_response_message(int status) {
+size_t HttpResponse::create_response_message() {
 	std::string	status_line, response_header, response_body;
 
-	if (status != 200 && status != 404) {
-		return -1;
-	}
-
-	status_line = create_status_line(status);
+	// todo: error handring, status != 200 && status != 404
+	status_line = create_status_line();
 	response_header = create_response_header();
-	response_body = create_response_body(status);
+	response_body = create_response_body();
 	response_message_ = status_line + response_header + "\r\n" + response_body;
 	return static_cast<ssize_t>(response_message_.length());
 }
@@ -168,4 +164,10 @@ ssize_t HttpResponse::get_file_size(const char *path) {
 	}
 	close(fd);
 	return size;
+}
+
+// todo: not display image
+void HttpResponse::show_response() const {
+	std::cout << "RESPONSE MESSAGE:\n"
+	<< YELLOW << response_message_ << END << std::endl;
 }
