@@ -1,5 +1,5 @@
 SERVER		= server
-CLIENT		= client
+#CLIENT		= client
 
 CXX			= c++
 CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -MMD -MP -pedantic
@@ -8,18 +8,22 @@ ifdef WITH_SANI
 	CXXFLAGS += -g -fsanitize=address -fsanitize=undefined
 endif
 
-SERVER_SCR	= srcs/server_dir/Server.cpp \
-			  srcs/server_dir/main.cpp
+SRC_DIR		= srcs
+SERVER_SCR	= $(SRC_DIR)/HttpRequest.cpp \
+  			  $(SRC_DIR)/HttpResponse.cpp \
+			  $(SRC_DIR)/main.cpp \
+  			  $(SRC_DIR)/Server.cpp \
+  			  $(SRC_DIR)/View.cpp
 
-CLIENT_SCR	= srcs/client_dir/Client.cpp \
-			  srcs/client_dir/main.cpp
+#CLIENT_SCR	= srcs/client_dir/Client.cpp \
+#			  srcs/client_dir/main.cpp
 
 OBJ_DIR		= objs
 SERVER_OBJ	= $(SERVER_SCR:%.cpp=%.o)
 SERVER_OBJS	= $(addprefix $(OBJ_DIR)/, $(SERVER_OBJ))
 
-CLIENT_OBJ	= $(CLIENT_SCR:%.cpp=%.o)
-CLIENT_OBJS	= $(addprefix $(OBJ_DIR)/, $(CLIENT_OBJ))
+#CLIENT_OBJ	= $(CLIENT_SCR:%.cpp=%.o)
+#CLIENT_OBJS	= $(addprefix $(OBJ_DIR)/, $(CLIENT_OBJ))
 
 INCLUDES_DIR = includes
 INCLUDES	= $(addprefix -I, $(INCLUDES_DIR))
@@ -33,8 +37,8 @@ all			: $(SERVER)
 $(SERVER)	: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(CLIENT)	: $(CLIENT_OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+#$(CLIENT)	: $(CLIENT_OBJS)
+#	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJ_DIR)/%.o	: %.cpp
 	@mkdir -p $$(dirname $@)

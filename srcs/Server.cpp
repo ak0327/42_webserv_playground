@@ -93,10 +93,11 @@ void Server::response_http_to_client() {
 		std::cout << CYAN "[SERVER] connection end" END << std::endl;
 		return;
 	}
-//	std::cout << "\ncheck request_message:\n" << YELLOW << request_message_ << END << std::endl;
-
 	HttpRequest request = HttpRequest(request_message_);
-	HttpResponse response = HttpResponse(request.get_path());
+//	request.show_request();
+
+	HttpResponse response = HttpResponse(request);
+//	response.show_response();
 
 	send_response_to_client(response);
 }

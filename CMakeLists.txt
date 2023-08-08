@@ -9,9 +9,12 @@ set(CMAKE_CXX_FLAGS "-std=c++98 -Wall -Wextra -Werror")
 
 include_directories(includes)
 
-add_executable(server
-        srcs/server_dir/Server.cpp
-        srcs/server_dir/main.cpp
-        srcs/server_dir/HttpRequest.cpp
-        srcs/server_dir/HttpResponse.cpp
-)
+set(server_src
+        srcs/main.cpp
+        srcs/Server.cpp
+        srcs/HttpRequest.cpp
+        srcs/HttpResponse.cpp
+        srcs/View.cpp
+        )
+
+add_executable(server ${server_src})
