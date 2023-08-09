@@ -1,18 +1,22 @@
 *
 
+!.gitignore
+
 !srcs/
 !srcs/**
 !www/
 !www/*
 !includes/
 !playground/
+!.github/
+!.github/**
 
-!.gitignore
 !*.cpp
 !*.hpp
 !CMakeLists.txt
 !Makefile
 !Readme.md
 !CPPLINT.cfg
+
 
 .DS_Store

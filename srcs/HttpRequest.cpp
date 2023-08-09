@@ -23,8 +23,8 @@ std::string HttpRequest::get_received_request() const {
 std::string HttpRequest::get_request_method(char *received_request) {
 	char	*line, *tmp_method;
 
-	line = strtok(received_request, "\n");
-	tmp_method = strtok(line, " ");
+	line = strtok(received_request, "\n");  // NOLINT
+	tmp_method = strtok(line, " ");  // NOLINT
 	if (!tmp_method) {
 		throw std::runtime_error("fail to get request method");
 	}
@@ -37,7 +37,7 @@ std::string HttpRequest::get_request_target() {
 	std::string target;
 
 	errno = 0;
-	tmp_target = strtok(NULL, " ");
+	tmp_target = strtok(NULL, " ");  // NOLINT
 	if (!tmp_target) {
 		throw std::runtime_error("fail to get request target");
 	}

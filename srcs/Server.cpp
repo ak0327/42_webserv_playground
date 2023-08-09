@@ -30,7 +30,7 @@ void Server::bind_socket() const {
 	setsockopt_ret = setsockopt(listen_fd_,
 								SOL_SOCKET,
 								SO_REUSEADDR,
-								(char *)&reuse, sizeof(int));
+								reinterpret_cast<char *>(&reuse), sizeof(int));
 	if (setsockopt_ret == -1) {
 		std::cout << strerror(errno) << std::endl;
 	}
