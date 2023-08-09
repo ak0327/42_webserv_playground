@@ -10,9 +10,10 @@ HttpResponse::~HttpResponse() {}
 // todo: add more status
 std::map<int, std::string> HttpResponse::init_status_line() {
 	std::map<int, std::string> status_codes;
-	status_codes[200] = "200 OK";
-	status_codes[404] = "404 Not Found";
-	status_codes[405] = "405 Method Not Allowed";
+	status_codes[200] = STATUS_200;
+	status_codes[302] = STATUS_302;
+	status_codes[404] = STATUS_404;
+	status_codes[405] = STATUS_405;
 	return status_codes;
 }
 
@@ -30,19 +31,25 @@ std::string HttpResponse::get_body_and_status(HttpRequest const &request) {
 	size_t	file_size;
 	char	buf[SIZE];
 
-	if (method != "GET" && method != "POST") {
+	if (method != GET_METHOD && method != POST_METHOD) {
 		return STATUS_CODES_[404];
 	}
 
-	if (path ==  "/now") {
+	// todo: sep for view -> if POST, if GET
+	if (path ==  NOW_ENDPOINT) {
 		body_ = get_dynamic_body_now();
 		return STATUS_CODES_[200];
-	} else if (path == "/show_request") {
+	} else if (path == SHOW_REQUEST_ENDPOINT) {
 		// todo: received_request -> request_line, header, body
 		body_ = get_dynamic_body_show_request(received_request);
 		return STATUS_CODES_[200];
 	}
 
+	if (path == ROOT_PATH) {
+		path = std::string(WWW_ROOT_DIR) + std::string(INDEX_HTML);
+	} else {
+		path = std::string(WWW_ROOT_DIR) + path;
+	}
 	file_size = get_file_size(path.c_str());
 	if (file_size == 0) {
 		return STATUS_CODES_[404];
@@ -96,7 +103,8 @@ std::string HttpResponse::get_content_type(std::string const &path) {
 std::string HttpResponse::create_status_line() {
 	std::ostringstream	ss;
 
-	ss << HTTP_VERSION << " " << status_code_ << "\r\n";
+	//todo
+	ss << "HTTP_VERSION" << " " << status_code_ << "\r\n";
 	return ss.str();
 }
 

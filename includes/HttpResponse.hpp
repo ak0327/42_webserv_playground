@@ -1,22 +1,41 @@
 #pragma once
 
-#include <fcntl.h>
-#include <unistd.h>
+# include <fcntl.h>
+# include <unistd.h>
 
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+# include <cerrno>
+# include <cstdio>
+# include <cstdlib>
+# include <cstring>
 
-#include <iostream>
-#include <string>
-#include <map>
+# include <iostream>
+# include <string>
+# include <map>
 
-#include "Color.hpp"
-#include "View.hpp"
-#include "HttpRequest.hpp"
+# include "Color.hpp"
+# include "View.hpp"
+# include "HttpRequest.hpp"
 
-#define SIZE		(5 * 1024)
+# define SIZE		(5 * 1024)
+
+# define GET_METHOD		"GET"
+# define POST_METHOD	"POST"
+
+# define STATUS_200	"200 OK"
+# define STATUS_302 "302 Found"
+# define STATUS_404 "404 Not Found"
+# define STATUS_405 "405 Method Not Allowed"
+
+# define NOW_ENDPOINT			"/now"
+# define SHOW_REQUEST_ENDPOINT	"/show_request"
+# define LOGIN_ENDPOINT			"/login"
+# define USERPAGE_ENDPOINT		"/userpage"
+# define PARAMETERS_ENDPOINT	"/parameters"
+
+#define WWW_ROOT_DIR	"www"
+#define INDEX_HTML		"/index.html"
+# define ROOT_PATH		"/"
+
 
 class HttpResponse {
  public:

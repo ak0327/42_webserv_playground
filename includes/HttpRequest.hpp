@@ -6,9 +6,7 @@
 
 #include "Color.hpp"
 
-#define HTTP_VERSION	"HTTP/1.1"
-#define WWW_ROOT		"www"
-#define INDEX			"/index.html"
+#define SPACE_CHR		' '
 
 class HttpRequest {
  public:
