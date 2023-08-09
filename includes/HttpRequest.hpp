@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <string>
 
 #include "Color.hpp"
 
@@ -11,7 +12,7 @@
 
 class HttpRequest {
  public:
-	HttpRequest(char *received_request);
+	explicit HttpRequest(char *received_request);
 	~HttpRequest();
 
 	std::string get_path() const;
@@ -20,10 +21,10 @@ class HttpRequest {
 
 	void show_request() const;
 
-private:
+ private:
 	std::string received_request_;
 	std::string method_;
- 	std::string path_;
+	std::string path_;
 	std::string http_version_;
 	std::map<std::string, std::string> header_;
 	std::string body_;
@@ -33,5 +34,4 @@ private:
 	std::string get_request_target();
 	std::map<std::string, std::string> get_request_header();
 	std::string get_request_body();
-
 };

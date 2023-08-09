@@ -8,31 +8,31 @@ ifdef WITH_SANI
 	CXXFLAGS += -g -fsanitize=address -fsanitize=undefined
 endif
 
-SRC_DIR		= srcs
-SERVER_SCR	= $(SRC_DIR)/HttpRequest.cpp \
-  			  $(SRC_DIR)/HttpResponse.cpp \
-			  $(SRC_DIR)/main.cpp \
-  			  $(SRC_DIR)/Server.cpp \
-  			  $(SRC_DIR)/View.cpp
+SRCS_DIR	= srcs
+SERVER_SRCS	= $(SRCS_DIR)/HttpRequest.cpp \
+  			  $(SRCS_DIR)/HttpResponse.cpp \
+			  $(SRCS_DIR)/main.cpp \
+  			  $(SRCS_DIR)/Server.cpp \
+  			  $(SRCS_DIR)/View.cpp
 
 #CLIENT_SCR	= srcs/client_dir/Client.cpp \
 #			  srcs/client_dir/main.cpp
 
 OBJ_DIR		= objs
-SERVER_OBJ	= $(SERVER_SCR:%.cpp=%.o)
+SERVER_OBJ	= $(SERVER_SRCS:%.cpp=%.o)
 SERVER_OBJS	= $(addprefix $(OBJ_DIR)/, $(SERVER_OBJ))
 
 #CLIENT_OBJ	= $(CLIENT_SCR:%.cpp=%.o)
 #CLIENT_OBJS	= $(addprefix $(OBJ_DIR)/, $(CLIENT_OBJ))
 
 INCLUDES_DIR = includes
-INCLUDES	= $(addprefix -I, $(INCLUDES_DIR))
+INCLUDES	 = $(addprefix -I, $(INCLUDES_DIR))
 
-DEPS		= $(OBJS:%.o=%.d)
+SERVER_DEPS	 = $(SERVER_OBJS:%.o=%.d)
 
-.PHONY		:all
-all			: $(SERVER)
-#all			: $(SERVER) $(CLIENT)
+.PHONY	: all
+all		: $(SERVER)
+#all	: $(SERVER) $(CLIENT)
 
 $(SERVER)	: $(SERVER_OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -50,7 +50,8 @@ clean	:
 
 .PHONY	: fclean
 fclean	: clean
-	$(RM) $(SERVER) $(CLIENT)
+	rm -f $(SERVER)
+#	$(RM) $(SERVER) $(CLIENT)
 
 .PHONY	: sani
 sani	:
@@ -67,4 +68,4 @@ lint	:
 run		: all
 	./$(SERVER)
 
--include $(DEPS)
+-include $(SERVER_DEPS)

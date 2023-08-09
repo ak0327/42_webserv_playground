@@ -1,13 +1,15 @@
 #pragma once
 
+#include <fcntl.h>
 #include <unistd.h>
+
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fcntl.h>
 
 #include <iostream>
+#include <string>
 #include <map>
 
 #include "Color.hpp"
@@ -17,8 +19,8 @@
 #define SIZE		(5 * 1024)
 
 class HttpResponse {
-public:
-	HttpResponse(HttpRequest const &request);
+ public:
+	explicit HttpResponse(HttpRequest const &request);
 	~HttpResponse();
 
 	char *get_response_message();
@@ -28,7 +30,7 @@ public:
 
 	void show_response() const;
 
-private:
+ private:
 	std::string status_code_;
 	std::string content_type_;
 	std::string body_;
@@ -41,8 +43,9 @@ private:
 
 	void get_http_response(HttpRequest const &request);
 
-	std::string get_response_body_and_status(HttpRequest const &request);
-	std::string get_response_body(const char *file_path, std::string const &received_request);
+	std::string get_body_and_status(HttpRequest const &request);
+	std::string get_response_body(const char *file_path,
+								  std::string const &received_request);
 
 	size_t create_response_message();
 	std::string create_status_line();
@@ -55,6 +58,4 @@ private:
 
 	std::string get_content_type(std::string const &path);
 	std::string get_extension(const std::string &path) const;
-
 };
-

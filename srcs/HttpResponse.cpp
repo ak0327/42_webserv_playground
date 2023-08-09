@@ -17,12 +17,12 @@ std::map<int, std::string> HttpResponse::init_status_line() {
 }
 
 void HttpResponse::get_http_response(HttpRequest const &request) {
-	status_code_ = get_response_body_and_status(request);
+	status_code_ = get_body_and_status(request);
 	content_type_ = get_content_type(request.get_path());
 	response_size_ = create_response_message();
 }
 
-std::string HttpResponse::get_response_body_and_status(HttpRequest const &request) {
+std::string HttpResponse::get_body_and_status(HttpRequest const &request) {
 	std::string	method = request.get_method();
 	std::string path = request.get_path();
 	std::string received_request = request.get_received_request();
@@ -81,7 +81,7 @@ std::string HttpResponse::get_content_type(std::string const &path) {
 	std::string	ext_str;
 
 	ext_str = get_extension(path);
-//	std::cout << "ext_str:" << ext_str << std::endl;
+// 	std::cout << "ext_str:" << ext_str << std::endl;
 	if (ext_str == "html" || path == "/now" || path == "/show_request")
 		return "text/html";
 	if (ext_str == "css")

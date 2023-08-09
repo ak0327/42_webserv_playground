@@ -27,7 +27,10 @@ void Server::bind_socket() const {
 	int			reuse = 1;
 
 	errno = 0;
-	setsockopt_ret = setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int));
+	setsockopt_ret = setsockopt(listen_fd_,
+								SOL_SOCKET,
+								SO_REUSEADDR,
+								(char *)&reuse, sizeof(int));
 	if (setsockopt_ret == -1) {
 		std::cout << strerror(errno) << std::endl;
 	}
@@ -97,7 +100,7 @@ void Server::response_http_to_client() {
 	request.show_request();
 
 	HttpResponse response = HttpResponse(request);
-//	response.show_response();
+// 	response.show_response();
 
 	send_response_to_client(response);
 }

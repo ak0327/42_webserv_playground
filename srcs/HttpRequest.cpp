@@ -75,8 +75,8 @@ void HttpRequest::parse_request_message(char *received_request) {
 	method_ = get_request_method(received_request);
 	path_ = get_request_target();
 	http_version_ = HTTP_VERSION;
-//	header_ = get_request_header();  // todo: later
-//	body_ = get_request_body();  // todo: later
+// 	header_ = get_request_header();  // todo: later
+// 	body_ = get_request_body();  // todo: later
 }
 
 
