@@ -34,7 +34,6 @@ std::map<std::string, std::string> HttpResponse::init_content_types() {
 // todo: add_to_header_elems called in various func...
 // todo: if something failure, status="500 Internal Error"
 void HttpResponse::get_http_response(HttpRequest const &request) {
-
 	add_to_header_elems("Date", get_response_date());
 	add_to_header_elems("Server", "Webserv");
 	get_body_and_status(request);
@@ -129,7 +128,7 @@ void HttpResponse::get_endpoint_login(HttpRequest const &request) {
  *  expected: key1=value1; key2=value2; ...
  *  sep cookie unit by '; ' and key-value by '='
  */
-std::map<std::string, std::string> HttpResponse::get_cookie_pairs(std::string &cookies) {
+std::map<std::string, std::string> HttpResponse::get_cookie_pairs(const std::string &cookies) {
 	std::map<std::string, std::string> cookie_pairs;
 	std::string::size_type start = 0;
 	std::string::size_type end;
@@ -143,7 +142,7 @@ std::map<std::string, std::string> HttpResponse::get_cookie_pairs(std::string &c
 			std::string value = cookie.substr(separator + 1);
 			cookie_pairs[key] = value;
 		}
-		start = end + 2; // Skip over the "; "
+		start = end + 2;  // Skip over the "; "
 	}
 
 	// Handle the last cookie
@@ -159,7 +158,8 @@ std::map<std::string, std::string> HttpResponse::get_cookie_pairs(std::string &c
 	return cookie_pairs;
 }
 
-bool HttpResponse::is_key_contains_map(const std::map<std::string, std::string> map, std::string const &key) {
+bool HttpResponse::is_key_contains_map(const std::map<std::string, std::string> map,
+									   std::string const &key) {
 	return map.find(key) != map.end();
 }
 
@@ -201,18 +201,17 @@ void HttpResponse::get_endpoint_userpage(HttpRequest const &request) {
 		return;
 	}
 	status_code_ = STATUS_CODES_[405];
-
 }
 
 void HttpResponse::get_endpoint_parameters(HttpRequest const &request) {
 	const std::string method = request.get_method();
 
 	if (method == GET_METHOD) {
-		status_code_ = STATUS_CODES_[405]; // todo:tmp
+		status_code_ = STATUS_CODES_[405];  // todo:tmp
 		return;
 	}
 	if (method == POST_METHOD) {
-		status_code_ = STATUS_CODES_[405]; // todo:tmp
+		status_code_ = STATUS_CODES_[405];  // todo:tmp
 		return;
 	}
 	if (method == DELETE_METHOD) {
@@ -236,16 +235,15 @@ void HttpResponse::get_static_file_content(const std::string &path) {
 	char		buf[SIZE];
 
 	static_path = get_static_path(path);
-//	std::cout << "static_path:" << static_path << std::endl;
 	file_size = get_file_size(static_path.c_str());
 	if (file_size == 0) {
 		status_code_ =  STATUS_CODES_[404];
-		return ;
+		return;
 	}
 	f = fopen(static_path.c_str(), "r");  // todo: error
 	std::fread(&buf, 1, file_size, f);  // todo: error
 	fclose(f);  // todo: error
-	buf[file_size] = '\0';
+	buf[file_size] = NULL_CHR;
 	body_ = std::string(buf, file_size);
 	status_code_ = STATUS_CODES_[200];
 }
@@ -253,7 +251,6 @@ void HttpResponse::get_static_file_content(const std::string &path) {
 void HttpResponse::get_body_and_status(HttpRequest const &request) {
 	std::string path = request.get_path();
 
-	printf("1\n");
 	if (path == ENDPOINT_NOW) {
 		return get_endpoint_now(request);
 	}
@@ -261,11 +258,9 @@ void HttpResponse::get_body_and_status(HttpRequest const &request) {
 		return get_endpoint_show_request(request);
 	}
 	if (path == ENDPOINT_LOGIN) {
-		printf("1-1\n");
 		return get_endpoint_login(request);
 	}
 	if (path == ENDPOINT_USERPAGE) {
-		printf("1-2\n");
 		return get_endpoint_userpage(request);
 	}
 	if (path == ENDPOINT_PARAMETERS) {

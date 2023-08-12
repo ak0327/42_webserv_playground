@@ -64,13 +64,3 @@ std::string render_user_page(const std::string &username) {
 
 	return ss.str();
 }
-
-// todo: endpoint -> std::string request_body or func_ptr(HttpRequest request)
-//std::map<std::string, std::string> url_views = {
-//		{"/now", ""},
-//		{"/show_request", ""},
-//		{"/parameters", ""},
-//		{"/set_cookie", ""},
-//		{"/login", ""},
-//		{"/userpage", ""},
-//};

@@ -73,6 +73,8 @@
 # define COLON		":"
 # define OWS		" "
 
+# define NULL_CHR	'\0'
+
 class HttpResponse {
  public:
 	explicit HttpResponse(HttpRequest const &request);
@@ -129,7 +131,7 @@ class HttpResponse {
 
 	void add_to_header_elems(std::string const &key, std::string const &value);
 
-	std::map<std::string, std::string> get_cookie_pairs(std::string &cookie_value);
-	bool is_key_contains_map(const std::map<std::string, std::string> map, std::string const &key);
-
+	std::map<std::string, std::string> get_cookie_pairs(const std::string &cookie_value);
+	bool is_key_contains_map(const std::map<std::string, std::string> map,
+							 std::string const &key);
 };

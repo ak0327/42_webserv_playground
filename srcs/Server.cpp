@@ -100,7 +100,7 @@ void Server::response_http_to_client() {
 	request.show_request();
 
 	HttpResponse response = HttpResponse(request);
- 	response.show_response();
+	response.show_response();
 
 	send_response_to_client(response);
 }

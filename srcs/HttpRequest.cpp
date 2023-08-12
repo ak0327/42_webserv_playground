@@ -118,7 +118,7 @@ void HttpRequest::parse_http_request(char *received_request) {
  */
 
 // todo: refactor, common
-std::string HttpRequest::get_request_str() const{
+std::string HttpRequest::get_request_str() const {
 	std::ostringstream ss;
 	std::map<std::string, std::string>::const_iterator itm;
 	std::vector<char>::const_iterator itv;
@@ -136,8 +136,7 @@ std::string HttpRequest::get_request_str() const{
 		<< " : " << itm->second << std::endl;
 	}
 
-	ss << "\n <h1>Request body :</h1>\n"
-			  << "   " ;
+	ss << "\n <h1>Request body :</h1>\n" << "   ";
 	for (itv = body_.begin(); itv != body_.end(); itv++) {
 		std::cout << *itv;
 	}
@@ -188,8 +187,7 @@ void HttpRequest::show_request() const {
 		<< " : " << itm->second << END << std::endl;
 	}
 
-	std::cout << " Request body :\n"
-	<< GREEN "   " ;
+	std::cout << " Request body :\n" << GREEN "   ";
 	for (itv = body_.begin(); itv != body_.end(); itv++) {
 		std::cout << *itv;
 	}
