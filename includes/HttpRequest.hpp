@@ -1,35 +1,59 @@
 #pragma once
 
-#include <iostream>
-#include <map>
-#include <string>
+# include <iostream>
+# include <iomanip>
+# include <map>
+# include <string>
+# include <sstream>
 
-#include "Color.hpp"
+# include "Color.hpp"
 
-#define SPACE_CHR		' '
+# define SPACE_CHR	' '
 
+/*
+  HTTP-message   = start-line CRLF
+                   *( field-line CRLF )
+                   CRLF
+                   [ message-body ]
+
+ https://httpwg.org/specs/rfc9112.html
+ https://triple-underscore.github.io/http1-ja.html
+ */
 class HttpRequest {
  public:
 	explicit HttpRequest(char *received_request);
 	~HttpRequest();
 
-	std::string get_path() const;
+	// todo: reference ?
 	std::string get_method() const;
+	std::string get_path() const;
+	std::string get_http_version() const;
 	std::string get_received_request() const;
 
+	bool is_contains_header_key(const std::string &key) const;
+	bool is_not_contains_header_key(const std::string &key) const;
+	std::string get_header_value(const std::string &key) const;
+
 	void show_request() const;
+	std::string get_request_str() const;
+
+	bool is_method_equals(const std::string &req) const;
+
+	std::vector<char> get_body() const;
 
  private:
 	std::string received_request_;
 	std::string method_;
-	std::string path_;
+	std::string target_;
 	std::string http_version_;
 	std::map<std::string, std::string> header_;
-	std::string body_;
+	std::vector<char> body_;
 
-	void parse_request_message(char *received_request);
-	std::string get_request_method(char *received_request);
-	std::string get_request_target();
-	std::map<std::string, std::string> get_request_header();
-	std::string get_request_body();
+	void parse_http_request(char *received_request);
+	std::string get_request_method(std::istringstream &iss);
+	std::string get_request_target(std::istringstream &iss);
+	std::string get_http_version(std::istringstream &iss);
+	std::map<std::string, std::string> get_request_header(std::istringstream &iss);
+	std::vector<char> get_request_body(std::istringstream &iss);
+	void skip_line(std::istringstream &iss);
 };
