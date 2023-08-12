@@ -1,45 +1,45 @@
 #pragma once
 
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+# include <arpa/inet.h>
+# include <fcntl.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <unistd.h>
 
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+# include <cerrno>
+# include <cstdio>
+# include <cstdlib>
+# include <cstring>
 
-#include <iostream>
-#include <sstream>
-#include <exception>
+# include <iostream>
+# include <sstream>
+# include <exception>
 
-#include "View.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
+# include "View.hpp"
+# include "HttpRequest.hpp"
+# include "HttpResponse.hpp"
 
-#define SERVER_ADDR		"127.0.0.1"
-#define SERVER_PORT		8080
-#define BUF_SIZE		1024
-#define ACCEPT_ERROR	(-1)
-#define BIND_ERROR		(-1)
-#define SOCKET_ERROR	(-1)
-#define SEND_ERROR		(-1)
-#define LISTEN_ERROR	(-1)
-#define RECV_ERROR		(-1)
-#define FORK_ERROR		(-1)
+# define SERVER_ADDR	"127.0.0.1"
+# define SERVER_PORT	8080
+# define BUF_SIZE		1024
+# define ACCEPT_ERROR	(-1)
+# define BIND_ERROR		(-1)
+# define SOCKET_ERROR	(-1)
+# define SEND_ERROR		(-1)
+# define LISTEN_ERROR	(-1)
+# define RECV_ERROR		(-1)
+# define FORK_ERROR		(-1)
 
-#define FLAG_NONE		0
-#define STR_EQUAL		0
+# define FLAG_NONE		0
+# define STR_EQUAL		0
 
-#define PROTOCOL		0
-#define NULL_CHR		0
-#define CONTINUE_CHR	1
-#define SEND_LEN		1
-#define CHILD_PROC		0
+# define PROTOCOL		0
+# define NULL_CHR		0
+# define CONTINUE_CHR	1
+# define SEND_LEN		1
+# define CHILD_PROC		0
 
-#define SIZE			(5 * 1024)
+# define SIZE			(5 * 1024)
 
 class Server {
  public:
