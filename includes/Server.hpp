@@ -34,7 +34,6 @@
 # define STR_EQUAL		0
 
 # define PROTOCOL		0
-# define NULL_CHR		0
 # define CONTINUE_CHR	1
 # define SEND_LEN		1
 # define CHILD_PROC		0
@@ -50,7 +49,7 @@ class Server {
 
  private:
 	int	listen_fd_;
-	int	connect_fd_;
+//	int	connect_fd_;
 	struct sockaddr_in	a_addr_;
 	char request_message_[SIZE];
 
@@ -58,12 +57,13 @@ class Server {
 	void set_socket_addr();
 	void bind_socket() const;
 	void listen_socket() const;
-	void accept_connect();
+	int accept_connect();
 
-	ssize_t	recv_request_from_client();
+	ssize_t	recv_request_from_client(int connect_fd);
+	void response_http_to_client(int connect_fd);
 
-	void response_http_to_client();
+	int find_maxfds(fd_set *fds) const;
 
-	void send_response_to_client(HttpResponse response);
+	void send_response_to_client(int connect_fd, HttpResponse response);
 	void disconnect_from_client() const;
 };

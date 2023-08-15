@@ -52,22 +52,24 @@ void Server::listen_socket() const {
 	}
 }
 
-void Server::accept_connect() {
+int Server::accept_connect() {
 	// server: listening socket
 	// no peer socket -> addr, addrlen can be NULL
+	int connect_fd;
+
 	errno = 0;
-	connect_fd_ = accept(listen_fd_, NULL, NULL);
-	if (connect_fd_ == ACCEPT_ERROR) {
+	connect_fd = accept(listen_fd_, NULL, NULL);
+	if (connect_fd == ACCEPT_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
+	return connect_fd;
 }
 
-
-ssize_t Server::recv_request_from_client() {
+ssize_t Server::recv_request_from_client(int connect_fd) {
 	ssize_t request_size;
 
 	errno = 0;
-	request_size = recv(connect_fd_, request_message_, SIZE, FLAG_NONE);
+	request_size = recv(connect_fd, request_message_, SIZE, FLAG_NONE);
 	if (request_size == RECV_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
@@ -76,22 +78,22 @@ ssize_t Server::recv_request_from_client() {
 	return request_size;
 }
 
-void Server::send_response_to_client(HttpResponse response) {
+void Server::send_response_to_client(int connect_fd, HttpResponse response) {
 	char	*response_message = response.get_response_message();
 	size_t	message_len = response.get_response_size();
 	ssize_t send_size;
 
 	errno = 0;
-	send_size = send(connect_fd_, response_message, message_len, FLAG_NONE);
+	send_size = send(connect_fd, response_message, message_len, FLAG_NONE);
 	if (send_size == SEND_ERROR) {
 		throw std::runtime_error(strerror(errno));
 	}
 }
 
-void Server::response_http_to_client() {
+void Server::response_http_to_client(int connect_fd) {
 	ssize_t	request_size;
 
-	request_size = recv_request_from_client();
+	request_size = recv_request_from_client(connect_fd);
 	if (request_size == 0) {
 		std::cout << CYAN "[SERVER] connection end" END << std::endl;
 		return;
@@ -102,20 +104,67 @@ void Server::response_http_to_client() {
 	HttpResponse response = HttpResponse(request);
 	response.show_response();
 
-	send_response_to_client(response);
+	send_response_to_client(connect_fd, response);
 }
 
-void Server::disconnect_from_client() const {
-	close(connect_fd_);
+void Server::disconnect_from_client() const { }
+
+
+int Server::find_maxfds(fd_set *fds) const {
+	int i;
+
+	for (i = FD_SETSIZE; i >= 0; i--) {
+		if (FD_ISSET(i, fds)) {
+			return i + 1;
+		}
+	}
+	return 0;
 }
 
 void Server::communicate_to_client() {
+	fd_set	readfds, readfds_save;
+	int		i, n, maxfds, next_maxfds;
+	int		connect_fd;
+
+	FD_ZERO(&readfds_save);
+	FD_SET(this->listen_fd_, &readfds_save);
+	maxfds = next_maxfds = this->listen_fd_ + 1;
+
 	while (true) {
-		std::cout << CYAN "[SERVER] waiting connect..." END << std::endl;
-		accept_connect();
-		std::cout << CYAN "[SERVER] connected" END << std::endl;
-		response_http_to_client();
-		disconnect_from_client();
+		readfds = readfds_save;
+		errno = 0;
+		n = select(maxfds, &readfds, NULL, NULL, NULL);  // todo
+		if (n <= 0) {
+			throw std::runtime_error(strerror(errno));
+		}
+		if (FD_ISSET(this->listen_fd_, &readfds)) {
+			FD_CLR(this->listen_fd_, &readfds);
+
+			std::cout << CYAN "[SERVER] (" << getpid() <<
+			") accept incoming connections (fd=" <<
+			this->listen_fd_ << ")" END << std::endl;
+			connect_fd = accept_connect();
+
+			FD_SET(connect_fd, &readfds_save);
+			if (connect_fd + 1 > maxfds) {
+				next_maxfds = connect_fd + 1;
+			}
+		}
+
+		for (i = 0; i < maxfds; i++) {
+			if (FD_ISSET(i, &readfds)) {
+				response_http_to_client(i);
+				disconnect_from_client();
+				std::cout << CYAN "[SERVER] (" << getpid() <<
+				") connection (fd=" << i << ") closed" END << std::endl;
+				close(i);
+				FD_CLR(i, &readfds_save);
+				if (maxfds == i + 1) {
+					next_maxfds = find_maxfds(&readfds_save);
+				}
+			}
+		}
+		maxfds = next_maxfds;
 	}
 }
 
