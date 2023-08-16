@@ -14,3 +14,4 @@ To work on webserv, try to implement the following
 * [MDN Web Docs](https://developer.mozilla.org/ja/docs/Web/HTTP)
 * [【C言語】ソケット通信について解説](https://daeudaeu.com/socket/)
 * [【C言語】簡単な「HTTPサーバー」を作る](https://daeudaeu.com/c-http-server/)
+* [筑波大学 情報学類 システムプログラム(2022年)](http://www.coins.tsukuba.ac.jp/~syspro/2022/)
